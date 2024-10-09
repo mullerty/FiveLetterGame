@@ -1,10 +1,3 @@
-//
-//  GameViewDelegate.swift
-//  FiveLettersGame
-//
-//  Created by Sobopov on 10.10.2024.
-//
-
 import UIKit
 
 protocol GameViewDelegate {

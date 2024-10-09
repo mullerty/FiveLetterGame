@@ -1,10 +1,3 @@
-//
-//  GameVIew.swift
-//  FiveLettersGame
-//
-//  Created by Sobopov on 09.10.2024.
-//
-
 import UIKit
 
 final class GameView: UIView{
