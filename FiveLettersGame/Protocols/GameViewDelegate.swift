@@ -1,6 +1,6 @@
 import UIKit
 
-protocol GameViewDelegate {
+protocol GameViewDelegate: GameViewController {
     func didPressLetter(_ letter: String)
     func didPressDone()
     func didPressDelete()

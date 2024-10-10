@@ -7,7 +7,7 @@ final class GameView: UIView{
     var letterButtonMapping: [UIButton: String] = [:]
     var checkButton: UIButton = UIButton(type: .system)
     var backspaceButton: UIButton = UIButton(type: .system)
-    var delegate: GameViewDelegate!
+    weak var delegate: GameViewDelegate?
     
     init(frame: CGRect, delegate: GameViewDelegate) {
         super.init(frame: frame)
@@ -240,32 +240,33 @@ final class GameView: UIView{
     // MARK: - Update Grid UI
     private func updateGrid(){
         // Update grid with entered words
-        let attempts = delegate.getAttempts()
-        for (rowIndex, attempt) in attempts.enumerated() {
-            for (colIndex, char) in attempt.enumerated() {
-                let label = gridLabels[rowIndex][colIndex]
-                label.text = String(char)
-                label.backgroundColor = delegate?.getColorForLetter(attemptLetter: char, position: colIndex)
-                label.textColor = label.backgroundColor == .gray ? .white : .black
-                label.layer.borderColor = delegate?.getColorForLetter(attemptLetter: char, position: colIndex).cgColor
+        if let attempts = delegate?.getAttempts() {
+            for (rowIndex, attempt) in attempts.enumerated() {
+                for (colIndex, char) in attempt.enumerated() {
+                    let label = gridLabels[rowIndex][colIndex]
+                    label.text = String(char)
+                    label.backgroundColor = delegate?.getColorForLetter(attemptLetter: char, position: colIndex)
+                    label.textColor = label.backgroundColor == .gray ? .white : .black
+                    label.layer.borderColor = delegate?.getColorForLetter(attemptLetter: char, position: colIndex).cgColor
+                }
             }
-        }
-        
-        // Update current attempt
-        let isGameOver = delegate.getGameOverState()
-        if !isGameOver && attempts.count < 6 {
-            let currentRowIndex = attempts.count
-            for (colIndex, label) in gridLabels[currentRowIndex].enumerated() {
-                label.text = delegate.getCurrentAttemptSymbol(colIndex: colIndex)
-                label.backgroundColor = UIColor.clear
-                label.textColor = .white
-                label.layer.borderColor = UIColor.white.cgColor
+            
+            // Update current attempt
+            if let isGameOver = delegate?.getGameOverState() {
+                if !isGameOver && attempts.count < 6 {
+                    let currentRowIndex = attempts.count
+                    for (colIndex, label) in gridLabels[currentRowIndex].enumerated() {
+                        label.text = delegate?.getCurrentAttemptSymbol(colIndex: colIndex)
+                        label.backgroundColor = UIColor.clear
+                        label.textColor = .white
+                        label.layer.borderColor = UIColor.white.cgColor
+                    }
+                }
             }
         }
     }
     
     // MARK: - Update Keyboard UI
-    
     func updateKeyboardLetterButtons() {
         for button in keyboardButtons {
             if let letter = letterButtonMapping[button] {
@@ -278,14 +279,15 @@ final class GameView: UIView{
     }
     
     func updateKeyboardActionButtons() {
-        let (checkButtonState, backspaceButtonState) = delegate.getActionButtonsState()
-        if checkButton.isEnabled != checkButtonState {
-            checkButton.isEnabled = checkButtonState
-            updateActionButtonAppearance(button: checkButton)
-        }
-        if backspaceButton.isEnabled != backspaceButtonState {
-            backspaceButton.isEnabled = backspaceButtonState
-            updateActionButtonAppearance(button: backspaceButton)
+        if let (checkButtonState, backspaceButtonState) = delegate?.getActionButtonsState() {
+            if checkButton.isEnabled != checkButtonState {
+                checkButton.isEnabled = checkButtonState
+                updateActionButtonAppearance(button: checkButton)
+            }
+            if backspaceButton.isEnabled != backspaceButtonState {
+                backspaceButton.isEnabled = backspaceButtonState
+                updateActionButtonAppearance(button: backspaceButton)
+            }
         }
     }
     
